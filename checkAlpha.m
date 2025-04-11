@@ -1,0 +1,18 @@
+IBG = imread('./images/IBG.jpg');
+h1 = histogram(IBG);
+H1 = cumulativeHist(h1);
+IFG = imread('./images/IFG.jpeg');
+h2 = histogram(IFG);
+H2 = cumulativeHist(h2);
+I = alphaBlending(IBG,IFG,255);
+h3 = histogram(I);
+H3 = cumulativeHist(h3);
+subplot(3,3,1);imshow(IBG);hold on;
+subplot(3,3,2);bar(h1);hold on;
+subplot(3,3,3);bar(H1);hold on;
+subplot(3,3,4);imshow(IFG);hold on;
+subplot(3,3,5);bar(h2);hold on;
+subplot(3,3,6);bar(H2);hold on;
+subplot(3,3,7);imshow(I);hold on;
+subplot(3,3,8);bar(h3);hold on;
+subplot(3,3,9);bar(H3);hold on;

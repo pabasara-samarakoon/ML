@@ -6,7 +6,8 @@ function extractSIFT(subjects,nImgs)
 for sub = 1:subjects
     for imgs = 1:nImgs % number of images
         % extract SIFT descriptors
-        fname = ['.\faces\s' int2str(sub) '\' int2str(imgs) '.pgm'];
+        %fname = ['.\faces\s' int2str(sub) '\' int2str(imgs) '.pgm'];
+        fname = ['.\faces\s' int2str(sub) '\' int2str(sub) ' (' int2str(imgs) ').jpg'];
         I = imread(fname);
         if length(size(I))==3
             I = rgb2gray(I);
@@ -14,9 +15,9 @@ for sub = 1:subjects
         I = single(I);
         [frames,descrips] = vl_sift(I);
         descrips = double(descrips');
-        fname = ['.\descriptors\s' int2str(sub) '\' int2str(imgs) '.txt']; 
+        fname = ['.\descriptors\s' int2str(sub)  '\'  int2str(imgs) '.txt']; 
         save(fname, 'descrips', '-ASCII');
     end
 end
-
+%to run -->
 
