@@ -37,8 +37,39 @@ for i=1:length(C)
     accuracy(i) = WinnerTakesAll(valData,predict,A);
 end%for i
 
+%find best C
 [elt,ind] = max(accuracy);
 cOpt = C(ind);
+
+%Testing using optimal C
+options = svmlopt('C',cOpt , 'Verbosity' ,0);
+predict = [];
+
+    for class=1:N
+        %training data and make model
+        Model = ['Model',int2str(A(class)),'VsAll'];
+        x = invertData(trData,A(class));
+        y = x(:,end);
+        x(:,end) = [];
+        svmwrite('SVMTrain',x,y);
+        svm_learn(options,'SVMTrain',Model);
+        %testing data
+        xtest = invertData(teData,A(class));
+        ytest = xtest(:,end);
+        xtest(:,end) = [];
+        svmwrite('SVMTest',xtest,ytest);
+        ModelOutput = ['ModelOutPut',int2str(A(class)),'VsAll'];
+        svm_classify(options,'SVMLTest',Model,ModelOutput);
+        svmpredict = svmlread(ModelOutput);
+        predict = [predict , svmpredict];
+    end%for class
+    
+    accuracy(i) = WinnerTakesAll(teData,predict,A);
+    %next class -> invertAdata and winnertakes all
+    
+
+    
+        
         
         
 
