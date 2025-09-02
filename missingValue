@@ -1,0 +1,651 @@
+ >> help rmmissing
+ rmmissing   Remove rows or columns with missing entries
+    First argument must be numeric, datetime, duration, calendarDuration,
+    string, categorical, character array, cell array of character vectors,
+    a table, or a timetable.
+    Standard missing data is defined as:
+       NaN                   - for double and single floating-point arrays
+       NaN                   - for duration and calendarDuration arrays
+       NaT                   - for datetime arrays
+       <missing>             - for string arrays
+       <undefined>           - for categorical arrays
+       blank character [' '] - for character arrays
+       empty character {''}  - for cell arrays of character vectors
+ 
+    B = rmmissing(A) removes missing entries from a vector, or rows with
+    missing entries from a matrix or table.
+ 
+    B = rmmissing(A,DIM) reduces the size of A along the dimension DIM.
+    DIM = 1 removes rows, and DIM = 2 removes columns with missing entries.
+    If A is a table, DIM = 2 removes table variables. By default, rmmissing
+    reduces the size of A along its first non-singleton dimension: it
+    removes rows from matrices and tables.
+ 
+    B = rmmissing(A,...,'MinNumMissing',N) removes rows (columns) that
+    contain at least N missing entries. N must be an integer. By default,
+    N = 1.
+ 
+    [B,I] = rmmissing(A,...) also returns a logical row (column) vector I
+    indicating which rows (columns) of A were removed.
+ 
+    Arguments supported only for table inputs:
+ 
+    B = rmmissing(A,...,'DataVariables',DV) removes rows according to
+    missing data in table variables DV. The default is all table variables
+    in A. DV must be a table variable name, a cell array of table variable
+    names, a vector of table variable indices, a logical vector, or a
+    function handle that returns a logical scalar (such as @isnumeric).
+ 
+    Examples:
+ 
+      % Remove NaN entries from a vector
+        a = [NaN 1 2 NaN NaN 3]
+        b = rmmissing(a)
+ 
+      % Remove only rows that contain at least 2 missing entries
+        A = [NaN(1,3); 13 1 -20; NaN(4,1) ones(4,2); -1 7 -10; NaN(1,3)]
+        B = rmmissing(A,'MinNumMissing',2)
+ 
+      % Remove table rows that contain standard missing data
+        v1 = {'AB'; ''; ''; 'XYZZ'; 'CDE'};
+        v2 = [NaN; -1; 8; 10; 4];
+        v3 = categorical({'yes'; '--'; 'yes'; 'no'; 'yes'},{'yes' 'no'});
+        T = table(v1,v2,v3)
+        U = rmmissing(T)
+ 
+      % Ignore rows with NaN entries when using sortrows
+        a = [ [20 10 NaN 30 -5]', [1:5]' ]
+        [b,ia] = rmmissing(a)
+        a(~ia,:) = sortrows(b)
+ 
+    See also ismissing, standardizeMissing, fillmissing, isnan, isnat
+
+    Reference page for rmmissing
+
+>> help fillmissing
+ fillmissing   Fill missing entries
+    First argument must be numeric, datetime, duration, calendarDuration,
+    string, categorical, character array, cell array of character vectors,
+    a table, or a timetable.
+    Standard missing data is defined as:
+       NaN                   - for double and single floating-point arrays
+       NaN                   - for duration and calendarDuration arrays
+       NaT                   - for datetime arrays
+       <missing>             - for string arrays
+       <undefined>           - for categorical arrays
+       blank character [' '] - for character arrays
+       empty character {''}  - for cell arrays of character vectors
+ 
+    B = fillmissing(A,'constant',C) fills missing entries in A with the
+    constant scalar value C. You can also use a vector C to specify
+    different fill constants for each column (or table variable) in A: C(i)
+    represents the fill constant used for the i-th column of A. For tables
+    A, C can also be a cell containing fill constants of different types.
+ 
+    B = fillmissing(A,INTERP) fills standard missing entries using the
+    interpolation method specified by INTERP, which must be:
+       'previous'  - Previous non-missing entry.
+       'next'      - Next non-missing entry.
+       'nearest'   - Nearest non-missing entry.
+       'linear'    - Linear interpolation of non-missing entries.
+       'spline'    - Piecewise cubic spline interpolation.
+       'pchip'     - Shape-preserving piecewise cubic spline interpolation.
+ 
+    B = fillmissing(A,MOV,K) fills standard missing entries using a
+    centered moving window formed from neighboring non-missing entries.
+    K specifies the window length and must be a positive integer scalar.
+    MOV specifies the moving window method, which must be:
+       'movmean'   - Moving average of neighboring non-missing entries.
+       'movmedian' - Moving median of neighboring non-missing entries.
+    
+    B = fillmissing(A,MOV,[NB NF]) uses a moving window defined by the
+    previous NB elements, the current element, and the next NF elements.
+ 
+    Optional arguments:
+ 
+    B = fillmissing(A,METHOD,...,'EndValues',E) also specifies how to
+    extrapolate leading and trailing missing values. E must be:
+       'extrap'    - (default) Use METHOD to also extrapolate missing data.
+       'previous'  - Previous non-missing entry.
+       'next'      - Next non-missing entry.
+       'nearest'   - Nearest non-missing entry.
+       'none'      - No extrapolation of missing values.
+       VALUE       - Use an extrapolation constant. VALUE must be a scalar
+                     or a vector of type numeric, duration, or datetime.
+ 
+    B = fillmissing(A,METHOD,...,'SamplePoints',X) also specifies the
+    sample points X used by the fill method. X must be a floating-point,
+    duration, or datetime vector. X must be sorted. X must contain unique
+    points. You can use X to specify time stamps for the data. By default,
+    fillmissing uses data sampled uniformly at points X = [1 2 3 ... ].
+ 
+    B = fillmissing(A,METHOD,DIM,...) also specifies a dimension DIM to
+    operate along. A must be an array.
+ 
+    [B,FA] = fillmissing(A,...) also returns a logical array FA indicating
+    the missing entries of A that were filled. FA has the same size as A.
+ 
+    Arguments supported only for table inputs:
+ 
+    B = fillmissing(A,...,'DataVariables',DV) fills missing data only in
+    the table variables specified by DV. The default is all table variables
+    in A. DV must be a table variable name, a cell array of table variable
+    names, a vector of table variable indices, a logical vector, or a
+    function handle that returns a logical scalar (such as @isnumeric).
+    Output table B has the same size as input table A.
+ 
+    Examples:
+ 
+      % Linear interpolation of NaN entries
+        a = [NaN 1 2 NaN 4 NaN]
+        b = fillmissing(a,'linear')
+ 
+      % Fill leading and trailing NaN entries with their nearest neighbors
+        a = [NaN 1 2 NaN 4 NaN]
+        b = fillmissing(a,'linear','EndValues','nearest')
+ 
+      % Fill NaN entries with their previous neighbors (zero-order-hold)
+        A = [1000 1 -10; NaN 1 NaN; NaN 1 NaN; -1 77 5; NaN(1,3)]
+        B = fillmissing(A,'previous')
+ 
+      % Fill NaN entries with the mean of each column
+        A = [NaN(1,3); 13 1 -20; NaN(4,1) (1:4)' NaN(4,1); -1 7 -10; NaN(1,3)]
+        C = mean(A,'omitnan');
+        B = fillmissing(A,'constant',C)
+ 
+      % Linear interpolation of NaN entries for non-uniformly spaced data
+        x = [linspace(-3,1,120) linspace(1.1,7,30)];
+        a = exp(-0.1*x).*sin(2*x); a(a > -0.2 & a < 0.2) = NaN;
+        [b,id] = fillmissing(a,'linear','SamplePoints',x);
+        plot(x,a,'.', x(id),b(id),'o')
+        title('''linear'' fill')
+        xlabel('Sample points x');
+        legend('original data','filled missing data')
+ 
+      % Fill missing entries in tables with their previous neighbors
+        temperature = [21.1 21.5 NaN 23.1 25.7 24.1 25.3 NaN 24.1 25.5]';
+        windSpeed = [12.9 13.3 12.1 13.5 10.9 NaN NaN 12.2 10.8 17.1]';
+        windDirection = categorical({'W' 'SW' 'SW' '' 'SW' 'S' ...
+                            'S' 'SW' 'SW' 'SW'})';
+        conditions = {'PTCLDY' '' '' 'PTCLDY' 'FAIR' 'CLEAR' ...
+                            'CLEAR' 'FAIR' 'PTCLDY' 'MOSUNNY'}';
+        T = table(temperature,windSpeed,windDirection,conditions)
+        U = fillmissing(T,'previous')
+ 
+    See also ismissing, standardizeMissing, rmmissing, isnan, isnat
+
+    Reference page for fillmissing
+
+>> help normalize
+--- help for dfilt.normalize ---
+
+ normalize Normalize coefficients between -1 and 1.
+    G = normalize(Hd) normalizes the feed-forward coefficients between -1
+    and 1 and returns the gain G due to normalization.  Subsequent calls to
+    normalize will not change the feed-forward coefficients and G will
+    always return the gain used in the first normalization.
+ 
+    See also dfilt.denormalize.
+  Copyright 1988-2004 The MathWorks, Inc.
+
+>> help zscore
+ zscore Standardized z score.
+    Z = zscore(X) returns a centered, scaled version of X, the same size as X.
+    For vector input X, Z is the vector of z-scores (X-MEAN(X)) ./ STD(X). For
+    matrix X, z-scores are computed using the mean and standard deviation
+    along each column of X.  For higher-dimensional arrays, z-scores are
+    computed using the mean and standard deviation along the first
+    non-singleton dimension.
+ 
+    The columns of Z have sample mean zero and sample standard deviation one
+    (unless a column of X is constant, in which case that column of Z is
+    constant at 0).
+ 
+    [Z,MU,SIGMA] = zscore(X) also returns MEAN(X) in MU and STD(X) in SIGMA.
+ 
+    [...] = zscore(X,1) normalizes X using STD(X,1), i.e., by computing the
+    standard deviation(s) using N rather than N-1, where N is the length of
+    the dimension along which zscore works.  zscore(X,0) is the same as
+    zscore(X).
+ 
+    [...] = zscore(X,FLAG,DIM) standardizes X by working along the dimension
+    DIM of X. Pass in FLAG==0 to use the default normalization by N-1, or 1
+    to use N.
+ 
+    See also mean, std.
+
+    Reference page for zscore
+    Other functions named zscore
+
+>> help categorical
+ categorical Arrays for categorical data.
+    Categorical arrays are used to store discrete non-numeric values.  A
+    categorical array provides efficient storage and convenient manipulation of
+    such data, while also maintaining meaningful names for the values.
+    Categorical arrays can be subscripted, concatenated, reshaped, etc. just
+    like ordinary numeric arrays.  You can make comparisons between the values
+    in categorical arrays, or between a categorical array and one or more
+    character vectors representing categorical values.  Categorical arrays
+    are often used as "grouping variables" in a table to define groups of
+    rows.
+ 
+    Use the categorical constructor to create a categorical array from cell
+    arrays of character vectors, strings, integer, or logical values.  Use
+    the DISCRETIZE function to create a categorical array by discretizing
+    continuous numeric values.
+ 
+    Each categorical array carries along the set of possible values that it can
+    store, known as its categories.  The categories are defined when you create
+    a categorical array, and you can access them using the CATEGORIES method, or
+    modify them using the ADDCATS, RENAMECATS, MERGECATS, or REMOVECATS methods.
+    Assignment to a categorical array can also automatically add new categories
+    if the values assigned are not already categories of the array.
+ 
+    You may specify that a categorical array's categories have a mathematical
+    ordering -- such an array is said to be "ordinal".  An ordinal array
+    provides a complete set of relational comparisons between values in the
+    array.  Specify the order when you create the categorical array.  Change the
+    ordering of a categorical array's categories using the REORDERCATS method.
+    Arrays whose categories do not have a mathematical ordering only allow
+    comparing for equality between values -- such an array is said to be
+    "nominal".
+ 
+    categorical methods and functions:
+      Construction and conversion:
+        categorical        - Create a categorical array.
+        discretize         - Group numeric data into bins or categories.
+      Size and shape:
+        iscategorical      - True for categorical arrays.
+        size               - Size of a categorical array.
+        length             - Length of a categorical vector.
+        ndims              - Number of dimensions of a categorical array.
+        numel              - Number of elements in a categorical array.
+        cat                - Concatenate categorical arrays.
+        horzcat            - Horizontal concatenation for categorical arrays.
+        vertcat            - Vertical concatenation for categorical arrays.
+      Categories:
+        categories         - Get a list of a categorical array's categories.
+        iscategory         - Test for categorical array categories.
+        addcats            - Add categories to a categorical array.
+        mergecats          - Merge categories of a categorical array.
+        removecats         - Remove categories from a categorical array.
+        renamecats         - Rename the categories of a categorical array.
+        reordercats        - Reorder the categories of a categorical array.
+        setcats            - Sets the categories of a categorical array.
+        isordinal          - True if the categories of a categorical array have a mathematical ordering.
+        isprotected        - True if the categories of a categorical array are protected.
+      Comparison:
+        eq                 - Equality for categorical arrays.
+        ne                 - Not equal for categorical arrays.
+        lt                 - Less than for ordinal categorical arrays.
+        le                 - Less than or equal for ordinal categorical arrays.
+        ge                 - Greater than or equal for ordinal categorical arrays.
+        gt                 - Greater than for ordinal categorical arrays.
+        min                - Smallest element in an ordinal categorical array.
+        max                - Largest element in an ordinal categorical array.
+      Set membership:
+        intersect          - Find elements common to two categorical arrays.
+        ismember           - Find elements in one categorical array that occur in another.
+        setdiff            - Find elements that occur in one categorical array but not in another.
+        setxor             - Find elements that occur in one or the other of two categorical arrays, but not both.
+        unique             - Find unique elements in a categorical array.
+        union              - Find elements that occur in either of two categorical arrays.
+      Data methods:
+        summary            - Print summary of a categorical array.
+        countcats          - Count occurrences of categories in a categorical array's elements.
+        hist               - Histogram of a categorical array.
+        pie                - Pie chart of a categorical array.
+        sort               - Sort a categorical array.
+        sortrows           - Sort rows of a categorical array.
+        issorted           - True for sorted categorical array.
+        isundefined        - True for elements of a categorical array that are undefined.
+        times              - Create a categorical array as the Cartesian product of existing categories.
+        isequal            - True if categorical arrays are equal.
+        isequaln           - True if categorical arrays are equal, treating undefined elements as equal.
+        median             - Find the median of a categorical array.
+        mode               - Find the mode of a categorical array.
+    Conversion:
+        double             - Convert categorical array to DOUBLE array.
+        single             - Convert categorical array to SINGLE array.
+        int8               - Convert categorical array to INT8 array.
+        int16              - Convert categorical array to INT16 array.
+        int32              - Convert categorical array to INT32 array.
+        int64              - Convert categorical array to INT64 array.
+        uint8              - Convert categorical array to UINT8 array.
+        uint16             - Convert categorical array to UINT16 array.
+        uint32             - Convert categorical array to UINT32 array.
+        uint64             - Convert categorical array to UINT64 array.
+        char               - Convert categorical array to character array.
+        cellstr            - Convert categorical array to cell array of character vectors.
+        string             - Convert categorical array to string array.
+ 
+    Examples:
+       % Create a categorical array
+       colors = categorical({'r' 'b' 'g'; 'g' 'r' 'b'; 'b' 'r' 'g'}, ...
+                            {'r' 'g' 'b'},{'red' 'green' 'blue'})
+ 
+       % Find elements meeting a criterion
+       colors == 'red'
+       ismember(colors,{'red' 'blue'})
+ 
+       % Compare two categorical arrays
+       colors2 = fliplr(colors)
+       colors == colors2
+ 
+       % Create a categorical array by binning continuous data
+       x = rand(100,1);
+       y = discretize(x,[0 .25 .75 1],'categorical',{'small', 'medium', 'large'});
+       histogram(y)
+ 
+    See also categorical, table
+
+    Reference page for categorical
+    Other functions named categorical
+
+>> help dummyvar
+ dummyvar Dummy variable coding.
+    X=dummyvar(GROUP) returns a matrix X containing zeros and ones, whose
+    columns are dummy variables for the grouping variable GROUP.  GROUP can be
+    a categorical or numeric column vector.  The I'th dummy variable column in
+    X contains ones in elements where values in GROUP specify the I'th group.
+ 
+    The order of the dummy variable columns in X matches the order of the
+    groups defined by GROUP.  When GROUP is a categorical vector, the groups
+    and their order match the output of the CATEGORIES(GROUP) method.   When
+    GROUP is a numeric vector, dummyvar assumes that the groups and their
+    order are 1:MAX(GROUP).  NOTE: In this respect, DUMMYVARS treats a numeric
+    grouping variable differently than GRP2IDX.
+ 
+    GROUP can also be a cell array containing one or more grouping variables.
+    See "help groupingvariable" for more information.  GROUP can also be a
+    numeric matrix, and DUMMYVARS treats each column as a separate numeric
+    grouping variable, as described above.  With multiple grouping variables,
+    the sets of dummy variable columns are in the same order as the grouping
+    variables in GROUP.
+ 
+    dummyvar returns a full set of dummy variables for each grouping variable.
+    To create a regression design matrix, you may need to use a smaller set of
+    dummy variables so that SUM(X,2) is not identical to the column in the
+    design matrix that corresponds to the regression intercept.  You can, for
+    example, delete the first or the last dummy variable for each grouping
+    variable.
+ 
+    Example: Suppose we are studying the effects of two machines and three
+    operators on a process.  The first column of GROUP would have the
+    values one or two depending on which machine was used.  The second
+    column of GROUP would have the values one, two, or three depending on
+    which operator ran the machine.
+ 
+        machine = [1 1 1 1 2 2 2 2]';
+        oper    = [1 2 3 1 2 3 1 2]';
+        x = dummyvar([machine oper])
+ 
+    See also groupingvariable.
+
+    Reference page for dummyvar
+
+>> help pca
+ pca Principal Component Analysis (pca) on raw data.
+    COEFF = pca(X) returns the principal component coefficients for the N
+    by P data matrix X. Rows of X correspond to observations and columns to
+    variables. Each column of COEFF contains coefficients for one principal
+    component. The columns are in descending order in terms of component
+    variance (LATENT). pca, by default, centers the data and uses the
+    singular value decomposition algorithm. For the non-default options,
+    use the name/value pair arguments.
+    
+    [COEFF, SCORE] = pca(X) returns the principal component score, which is
+    the representation of X in the principal component space. Rows of SCORE
+    correspond to observations, columns to components. The centered data
+    can be reconstructed by SCORE*COEFF'.
+ 
+    [COEFF, SCORE, LATENT] = pca(X) returns the principal component
+    variances, i.e., the eigenvalues of the covariance matrix of X, in
+    LATENT.
+ 
+    [COEFF, SCORE, LATENT, TSQUARED] = pca(X) returns Hotelling's T-squared
+    statistic for each observation in X. pca uses all principal components
+    to compute the TSQUARED (computes in the full space) even when fewer
+    components are requested (see the 'NumComponents' option below). For
+    TSQUARED in the reduced space, use MAHAL(SCORE,SCORE).
+ 
+    [COEFF, SCORE, LATENT, TSQUARED, EXPLAINED] = pca(X) returns a vector
+    containing the percentage of the total variance explained by each
+    principal component.
+ 
+    [COEFF, SCORE, LATENT, TSQUARED, EXPLAINED, MU] = pca(X) returns the
+    estimated mean, MU, when 'Centered' is set to true; and all zeros when
+    set to false.
+ 
+    [...] = pca(..., 'PARAM1',val1, 'PARAM2',val2, ...) specifies optional
+    parameter name/value pairs to control the computation and handling of
+    special data types. Parameters are:
+    
+     'Algorithm' - Algorithm that pca uses to perform the principal
+                   component analysis. Choices are:
+         'svd'   - Singular Value Decomposition of X (the default).
+         'eig'   - Eigenvalue Decomposition of the covariance matrix. It
+                   is faster than SVD when N is greater than P, but less
+                   accurate because the condition number of the covariance
+                   is the square of the condition number of X.
+         'als'   - Alternating Least Squares (ALS) algorithm which finds
+                   the best rank-K approximation by factoring a X into a
+                   N-by-K left factor matrix and a P-by-K right factor
+                   matrix, where K is the number of principal components.
+                   The factorization uses an iterative method starting with
+                   random initial values. ALS algorithm is designed to
+                   better handle missing values. It deals with missing
+                   values without listwise deletion (see {'Rows',
+                   'complete'}).
+ 
+      'Centered' - Indicator for centering the columns of X. Choices are: 
+          true   - The default. pca centers X by subtracting off column
+                   means before computing SVD or EIG. If X contains NaN
+                   missing values, NANMEAN is used to find the mean with
+                   any data available.
+          false  - pca does not center the data. In this case, the original
+                   data X can be reconstructed by X = SCORE*COEFF'. 
+ 
+      'Economy'  - Indicator for economy size output, when D the degrees of
+                   freedom is smaller than P. D, is equal to M-1, if data
+                   is centered and M otherwise. M is the number of rows
+                   without any NaNs if you use 'Rows', 'complete'; or the
+                   number of rows without any NaNs in the column pair that
+                   has the maximum number of rows without NaNs if you use
+                   'Rows', 'pairwise'. When D < P, SCORE(:,D+1:P) and
+                   LATENT(D+1:P) are necessarily zero, and the columns of
+                   COEFF(:,D+1:P) define directions that are orthogonal to
+                   X. Choices are:
+          true   - This is the default. pca returns only the first D
+                   elements of LATENT and the corresponding columns of
+                   COEFF and SCORE. This can be significantly faster when P
+                   is much larger than D. NOTE: pca always returns economy
+                   size outputs if 'als' algorithm is specifed.
+          false  - pca returns all elements of LATENT. Columns of COEFF and
+                   SCORE corresponding to zero elements in LATENT are
+                   zeros.
+ 
+      'NumComponents' - The number of components desired, specified as a
+                   scalar integer K satisfying 0 < K <= P. When specified,
+                   pca returns the first K columns of COEFF and SCORE.
+ 
+      'Rows'     - Action to take when the data matrix X contains NaN
+                   values. If 'Algorithm' option is set to 'als, this
+                   option is ignored as ALS algorithm deals with missing
+                   values without removing them. Choices are:
+          'complete' - The default action. Observations with NaN values
+                       are removed before calculation. Rows of NaNs are
+                       inserted back into SCORE at the corresponding
+                       location.
+          'pairwise' - If specified, pca switches 'Algorithm' to 'eig'. 
+                       This option only applies when 'eig' method is used.
+                       The (I,J) element of the covariance matrix is
+                       computed using rows with no NaN values in columns I
+                       or J of X. Please note that the resulting covariance
+                       matrix may not be positive definite. In that case,
+                       pca terminates with an error message.
+          'all'      - X is expected to have no missing values. All data
+                       are used, and execution will be terminated if NaN is
+                       found.
+                      
+      'Weights'  - Observation weights, a vector of length N containing all
+                   positive elements.
+ 
+      'VariableWeights' - Variable weights. Choices are:
+           - a vector of length P containing all positive elements.
+           - the string 'variance'. The variable weights are the inverse of
+             sample variance. If 'Centered' is set true at the same time,
+             the data matrix X is centered and standardized. In this case,
+             pca returns the principal components based on the correlation
+             matrix.
+ 
+    The following parameter name/value pairs specify additional options
+    when alternating least squares ('als') algorithm is used.
+ 
+       'Coeff0'  - Initial value for COEFF, a P-by-K matrix. The default is
+                   a random matrix.
+ 
+       'Score0'  - Initial value for SCORE, a N-by-K matrix. The default is
+                   a matrix of random values.
+ 
+       'Options' - An options structure as created by the STATSET function.
+                   pca uses the following fields:
+           'Display' - Level of display output.  Choices are 'off' (the
+                       default), 'final', and 'iter'.
+           'MaxIter' - Maximum number of steps allowed. The default is
+                       1000. Unlike in optimization settings, reaching
+                       MaxIter is regarded as convergence.
+            'TolFun' - Positive number giving the termination tolerance for
+                       the cost function.  The default is 1e-6.
+              'TolX' - Positive number giving the convergence threshold
+                       for relative change in the elements of L and R. The
+                       default is 1e-6.
+ 
+ 
+    Example:
+        load hald;
+        [coeff, score, latent, tsquared, explained] = pca(ingredients);
+ 
+    See also ppca, pcacov, pcares, biplot, barttest, canoncorr, factoran,
+    rotatefactors.
+
+    Reference page for pca
+    Other functions named pca
+
+>> data = load('carbig')
+
+data = 
+
+  struct with fields:
+
+           Model: [406×36 char]
+          Origin: [406×7 char]
+             MPG: [406×1 double]
+       Cylinders: [406×1 double]
+    Displacement: [406×1 double]
+      Horsepower: [406×1 double]
+          Weight: [406×1 double]
+    Acceleration: [406×1 double]
+      Model_Year: [406×1 double]
+            cyl4: [406×5 char]
+             org: [406×7 char]
+            when: [406×5 char]
+             Mfg: [406×13 char]
+
+>> data = load carbig
+ data = load carbig
+             ↑
+Error: Unexpected MATLAB expression.
+ 
+>> load carbig
+>> tb1 = table(Horsepower,Weight,Acceleration,Cylinders,MPG);
+>> disp('First 5 rows of dataset:')
+First 5 rows of dataset:
+>> head(tb1,5)
+
+ans =
+
+  5×5 table
+
+    Horsepower    Weight    Acceleration    Cylinders    MPG
+    __________    ______    ____________    _________    ___
+
+    130           3504        12            8            18 
+    165           3693      11.5            8            15 
+    150           3436        11            8            18 
+    150           3433        12            8            16 
+    140           3449      10.5            8            17 
+
+>> disp('Summary Statistics')
+Summary Statistics
+>> summary(tb1)
+
+Variables:
+
+    Horsepower: 406×1 double
+
+        Values:
+
+            Min            46         
+            Median         95         
+            Max            230        
+            NumMissing     6          
+
+    Weight: 406×1 double
+
+        Values:
+
+            Min         1613  
+            Median    2822.5  
+            Max         5140  
+
+    Acceleration: 406×1 double
+
+        Values:
+
+            Min          8          
+            Median    15.5          
+            Max       24.8          
+
+    Cylinders: 406×1 double
+
+        Values:
+
+            Min       3          
+            Median    4          
+            Max       8          
+
+    MPG: 406×1 double
+
+        Values:
+
+            Min            9    
+            Median         23   
+            Max            46.6 
+            NumMissing     8    
+
+>> load('E:\dip\handleMissingValues\1.mat')
+>> disp('Number of missing values per column:')
+Number of missing values per column:
+>> disp(sum(ismissing(tb1)))
+     6     0     0     0     8
+
+>> tb1_clean = rmmissing(tb1);
+>> fprintf('After removing missing values:%d rows remain\n', height(tb1_clean));
+After removing missing values:392 rows remain
+>> tb1_fill= fillmissing(tb1,'linear');
+>> disp(sum(ismissing(tb1)))
+     6     0     0     0     8
+
+>> tb1_clean = rmmissing(tb1);
+>> fprintf('After removing missing values:%d rows remain\n', height(tb1_clean));
+After removing missing values:392 rows remain
+>> tb1_fill= fillmissing(tb1,'linear');
+>> disp(sum(ismissing(tb1_fill)))
+     0     0     0     0     0
+
+>> X = tb1_clean{:,{'Horsepower','Weight','Acceleration'}};
+>> X_norm = normalize(X,'range');
+Undefined function 'normalize' for input arguments of type 'double'.
+ 
+>> X_std = zscore(X);
