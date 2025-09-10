@@ -649,3 +649,42 @@ After removing missing values:392 rows remain
 Undefined function 'normalize' for input arguments of type 'double'.
  
 >> X_std = zscore(X);
+
+ X_std = zscore(X);
+>> subplot(1,2,1);histogram(X(:,1));title('Original');
+>> subplot(1,2,2);histogram(X_std(:,1));title('standardise hoursepower');
+>> tb1_clean.Cylinders = categorical(tb1_clean.Cylinders);
+>> cyl_encoded = dummyvar(tb1_clean.Cylinders);
+>> disp(cyl_encoded(1:5,:));
+     0     0     0     0     1
+     0     0     0     0     1
+     0     0     0     0     1
+     0     0     0     0     1
+     0     0     0     0     1
+
+>> X_final = [X_std cyl_encoded];
+>> T = tb1_clean{1:5,{'Cylinders'}};
+>> disp(T)
+     8 
+     8 
+     8 
+     8 
+     8 
+
+>> corrVals = corr(tb1_clean{:,{'Horsepower','Weight','Acceleration'}},tb1_clean.MPG,'Rows','complete');
+>> disp('Correlation of features with MPG:')
+Correlation of features with MPG:
+>> disp(array2table(corrVals,'VariableNames',{'Correlation'},
+ disp(array2table(corrVals,'VariableNames',{'Correlation'},
+                                                           ↑
+Error: Expression or statement is incorrect--possibly unbalanced (, {, or [.
+ 
+>> disp(array2table(corrVals,'VariableNames',{'Correlation'},'RowNames',{'Horsepower','Weight','Acceleration'}));
+                    Correlation
+                    ___________
+
+    Horsepower      -0.77843   
+    Weight          -0.83224   
+    Acceleration     0.42333   
+
+
