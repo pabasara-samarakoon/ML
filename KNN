@@ -1,0 +1,6 @@
+load fisheriris
+>> X = meas;
+>> y = species;
+>> cv = cvpartition(y,'HoldOut' , 0.3);
+>> Xtrain = X(training(cv),:);
+>> ytrain = y(training(cv),:);
