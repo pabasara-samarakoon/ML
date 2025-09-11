@@ -4,3 +4,12 @@ load fisheriris
 >> cv = cvpartition(y,'HoldOut' , 0.3);
 >> Xtrain = X(training(cv),:);
 >> ytrain = y(training(cv),:);
+>> Xtest = X(test(cv),:);
+>> yTest = y(test(cv),:);
+>> Mdl = fitcknn(Xtrain,ytrain,'NumNeighbors',3);
+>> ypred = predict(Mdl,Xtest);
+>> acc = sum(strcmp(ypred,yTest))/numel(yTest);
+>> fprintf('Accuracy :%.2f%%\n',acc*100);
+Accuracy :95.56%
+>> disp(acc);
+    0.9556
