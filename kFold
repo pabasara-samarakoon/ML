@@ -1,0 +1,19 @@
+load fisheriris
+X = meas;
+Y = species;
+nFolds = 5;
+cv = cvpartition(Y, 'KFold' , nFolds);
+accuracy = zeros(nFolds,1);
+for i = 1:nFolds
+    trainIdx = training(cv,i);
+    testIdx = test(cv,i);
+    % only change value here %build kNN classification model for a given dataset, vary the number of k
+%values as follows and compare the results 1 ,3 ,5
+    model = fitcknn(X(trainIdx,:),Y(trainIdx),'NumNeighbors',5);
+    predictions = categorical(predict(model,X(testIdx,:)));
+    accuracy(i) =  sum(predictions==Y(testIdx))/numel(predictions);
+    fprintf('Fold%d Accuracy:%.2f%%\n',accuracy(i)*100);
+end
+fprintf('\nAverage accuracy across %d folds : %.2f%%\n',nFolds,mean(acuracy)*100);
+
+    
