@@ -1,0 +1,30 @@
+-------------Content covered so far ------------------------------
+Supervised
+    Classification %fitc
+        SVM
+        KNN
+        decision tree
+            ID3
+            Find S
+            Candidate Elimination
+        Ensambles
+            bagging
+            boosting
+            stacking          
+Unsupervised
+    clustering
+        K means
+        Hierarchical
+    Dimensionality Reduction
+        PCA
+        
+Feature selection
+    bag-of-features(visual object classification)
+    % Image -> feature extraction (Feature engineering) -> codebook construction (Unsupervised) ->
+    % classification(Supervised) -> performance evaluation
+
+----------------------------->BAG OF FEATURES
+in voc folder in lms
+        
+        
+            
