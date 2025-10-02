@@ -1,20 +1,18 @@
-function rate = nn(trData,teData)
+function rate = nn(traindata,testdata)
 
-mtr = size(trData,1);
-mte = size(teData,1);
-
+% This script is used for 1-NN Classification 
+m = size(traindata,1);
+n = size(testdata,1);
 predict = [];
-for j=1:mte %for each testing data
-	d = [];
-	y = teData(j,1:end-1);
-	for i=1:mtr %for each training data
-		d(i) = norm(y-trData(i,1:end-1));
+
+for test = 1:n % For each testing data
+	for train = 1:m % For each training data
+		Euclidist(train) = norm(testdata(test,1:end-1) - traindata(train,1:end-1));
 	end
-	[elt,ind] = min(d);
-	predict(j) = trData(ind,end);
+	
+	[val,ind] = min(Euclidist);
+	predict(test) = traindata(ind,end);
 end
 
-actual = teData(:,end);
-rate = 100*sum(actual==predict')/mte;
-	
-	
+actual = testdata(:,end);
+rate = 100*sum(actual==predict')/n;

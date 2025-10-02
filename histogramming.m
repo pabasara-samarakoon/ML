@@ -1,34 +1,63 @@
-function featVectors = histogramming(subjects,sImgs,eImgs,codebook)
 
-K = size(codebook,1);
-ftVec = [];
+CB = load('Codebook4Faces.txt');
+K = size(CB,1);
 
+subjects = 40;
+nTrImgs = 7;
+nTeImgs = 3;
+nImgs = nTrImgs+nTeImgs;
 
+hist = [];
+lbl =[];
+
+%Training Set
 for sub = 1:subjects
-    hist = [];
-    lbl = [];
-    for imgs = sImgs:eImgs
-        h = zeros(1,K); 
+    descrips = []; h = zeros(1,K);
+    for faces = 1:nTrImgs
         % load SIFT descriptors
-        fname = ['.\descriptors\s' int2str(sub) '\' int2str(imgs) '.txt'];
+        fname = ['s' int2str(sub) '-' int2str(faces) 'Descrips.txt'];
         descrips = load(fname);
         
         %histogramming   
-        for descriptor = 1:size(descrips,1)
-            for codeword = 1:K
-               d(codeword) = norm(descrips(descriptor,:)-codebook(codeword,:));
+        for des = 1:size(descrips,1)
+            for code = 1:K
+               dist(code) = norm(descrips(des,:)- CB(code,:));
             end
-            [elt,index] = min(d);
+            [elt,index] = min(dist);
             h(index) = h(index) + 1;
         end
         hist = [hist; h];
     end
-    lbl = [lbl;sub*ones(eImgs-sImgs+1,1)];
-    hist = [hist lbl];
-    ftVec = [ftVec; hist];
+    lbl = [lbl;sub*ones(nTrImgs,1)];  
 end
+hist = [hist lbl];
 
-featVectors = ftVec;
+save('TrainingHists.txt','hist','-ASCII');
 
+%Testing Set
+hist = [];
+lbl =[];
 
+for sub = 1:subjects
+    descrips = []; h = zeros(1,K);
+    for faces = (nTrImgs+1):nImgs
+        % load SIFT descriptors
+        fname = ['s' int2str(sub) '-' int2str(faces) 'Descrips.txt'];
+        descrips = load(fname);
+        
+        %histogramming   
+        for des = 1:size(descrips,1)
+            for code = 1:K
+               dist(code) = norm(descrips(des,:)- CB(code,:));
+            end
+            [elt,index] = min(dist);
+            h(index) = h(index) + 1;
+        end
+        hist = [hist; h];
+    end
+    lbl = [lbl;sub*ones(nTeImgs,1)];  
+end
+hist = [hist lbl];
+
+save('TestingHists.txt','hist','-ASCII');
 
